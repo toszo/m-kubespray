@@ -1,0 +1,31 @@
+all:
+  vars:
+    ansible_user: USER
+    ansible_ssh_private_key_file: /ssh/id_rsa
+  hosts:
+    node1:
+      ansible_host: IP_ADDRESS
+      ip: IP_ADDRESS
+      access_ip: IP_ADDRESS
+    node2:
+      ansible_host: IP_ADDRESS
+      ip: IP_ADDRESS
+      access_ip: IP_ADDRESS
+  children:
+    kube-master:
+      hosts:
+        node1:
+        node2:
+    kube-node:
+      hosts:
+        node1:
+        node2:
+    etcd:
+      hosts:
+        node1:
+    k8s-cluster:
+      children:
+        kube-master:
+        kube-node:
+    calico-rr:
+      hosts: {}
