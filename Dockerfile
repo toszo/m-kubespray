@@ -1,3 +1,11 @@
+# Compile kubespray-cli stage
+FROM golang:1.15 AS build-env
+ADD . /build-dir
+WORKDIR /build-dir/kubespray-cli
+RUN go build -o /kubespray-cli
+
+# Final Stage
+
 FROM python:3.7-slim
 
 ENV M_WORKDIR "/workdir"
@@ -19,6 +27,7 @@ RUN git clone https://github.com/kubernetes-sigs/kubespray.git
 
 RUN pip3 install -r ./kubespray/requirements.txt
 
+COPY --from=build-env /kubespray-cli /usr/bin
 
 # to be removed
 
@@ -30,4 +39,4 @@ RUN pip3 install -r ./kubespray/requirements.txt
 #RUN cat inventory/mycluster/group_vars/k8s-cluster/k8s-cluster.yml
 # ...
 
-ENTRYPOINT ["make"]
+ENTRYPOINT ["kubespray-cli"]
